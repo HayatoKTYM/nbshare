@@ -32,10 +32,16 @@ jobs:
           ${{ runner.os }}-yarn-
     
     - name: Install dependencies
-      run: yarn install
+      run: |
+        cd frontend
+        yarn install
 
     - name: Run Linter
-      run: yarn lint
+      run: |
+        cd frontend
+        yarn lint
 
     - name: Build
-      run: yarn build
+      run: |
+        cd frontend
+        yarn build
