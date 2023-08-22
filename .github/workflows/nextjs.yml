@@ -51,7 +51,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "19"
-          cache: ${{ steps.detect-package-manager.outputs.manager }}
+          # cache: ${{ steps.detect-package-manager.outputs.manager }}
       - name: Setup Pages
         uses: actions/configure-pages@v3
         with:
@@ -71,11 +71,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
-        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+        # run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+        run: yarn install
       - name: Build with Next.js
-        run: ${{ steps.detect-package-manager.outputs.runner }} next build
+        # run: ${{ steps.detect-package-manager.outputs.runner }} next build
+        run: yarn build
       - name: Static HTML export with Next.js
-        run: ${{ steps.detect-package-manager.outputs.runner }} next export
+        # run: ${{ steps.detect-package-manager.outputs.runner }} next export
+        run: yarn export
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
