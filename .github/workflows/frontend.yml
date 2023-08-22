@@ -1,5 +1,9 @@
 name: frontend
 
+defaults:
+  run:
+    working-directory: frontend
+
 on:
   push:
     branches:
@@ -11,37 +15,47 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     container:
       image: node:19
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
-    
-    - name: Cache yarn dependencies
-      uses: actions/cache@v2
-      with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
-    
-    - name: Install dependencies
-      run: |
-        cd frontend
-        yarn install
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
 
-    - name: Run Linter
-      run: |
-        cd frontend
-        yarn lint
+      - name: Cache yarn dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
-    - name: Build
-      run: |
-        cd frontend
-        yarn build
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Run Linter
+        run: |
+          yarn lint
+
+      - name: Build
+        run: |
+          yarn build
+
+  pages:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
