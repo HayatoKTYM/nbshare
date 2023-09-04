@@ -3,7 +3,7 @@ name = "nbshare"
 version = "0.1.0"
 description = "Add your description here"
 authors = [
-    { name = "HayatoKTYM", email = "hayakap1211@gmail.com" }
+    { name = "HayatoKTYM" }
 ]
 dependencies = [
     "fastapi[all]>=0.101.1",
