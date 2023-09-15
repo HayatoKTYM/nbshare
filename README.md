@@ -8,15 +8,45 @@ jupyter notebook を表示するアプリ
 
 ## setup
 
-* backend
+- backend
 
-```
+```sh
 rye sync
 ```
 
-* frontend
+- frontend
 
-```
+```sh
 cd frontend
 yarn install
+```
+
+## how to
+
+### 開発時
+
+- backend
+
+```sh
+rye run uvicorn app:app --reload --port 9000
+```
+
+- frontend
+
+```sh
+yarn dev
+```
+
+### 本番時
+
+- build frontend
+
+```sh
+yarn build
+```
+
+- run backend
+
+```sh
+rye run uvicorn app:app --reload --port 9000
 ```
