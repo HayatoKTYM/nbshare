@@ -1,4 +1,4 @@
-import json
+import logging
 import os
 
 import nbformat
@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from nbconvert import HTMLExporter
 from starlette.templating import Jinja2Templates
 
+logging.basicConfig(level=logging.DEBUG)
 app = FastAPI()
 origins = ["http://localhost:3001"]  # 開発用
 app.add_middleware(
@@ -19,7 +20,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 templates = Jinja2Templates(directory="frontend/out")
-app.mount("/_next", StaticFiles(directory="frontend/out/_next"), name="next-static")
+app.mount("/_next", StaticFiles(directory="frontend/out/_next"),
+          name="next-static")
+
+
+def validation_content(content):
+    _, ext = os.path.splitext(content)
+    if os.path.isdir(content) or ext in [".ipynb", ".html"]:
+        return True
 
 
 @app.get("/health")
@@ -29,7 +37,6 @@ def health():
 
 @app.get("/")
 def read_root(request: Request):
-    # index.htmlを返す
     return templates.TemplateResponse("index.html", {"request": request})
 
 
@@ -50,7 +57,16 @@ async def upload_notebook(file: UploadFile = File(...)):
     return HTMLResponse(content=html_output)
 
 
+@app.get("/api/list/")
+def get_dir():
+    contents = os.listdir(os.environ["NOTEBOOK_DIR"])
+    contents = list(filter(validation_content, contents))
+    logging.debug(contents)
+
+    return {"data": contents}
+
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0")
